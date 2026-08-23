@@ -1,0 +1,142 @@
+<idea-plugin>
+    <id>com.pokedex.companion</id>
+    <name>Pokedex Companion</name>
+    <vendor email="CHANGE_ME@example.com" url="https://github.com/CHANGE_ME/pokedex-companion">CHANGE_ME</vendor>
+
+    <description><![CDATA[
+        <p>A pixel-art companion that lives in a tool window and reacts to what
+        happens in your IDE. It celebrates a green test run, flinches when a
+        build fails, notices breakpoints and commits, dozes off when you step
+        away, and dances when music is playing.</p>
+
+        <p>Reactions are shown as speech bubbles inside the panel rather than
+        system notifications, so nothing interrupts your work.</p>
+
+        <h3>Features</h3>
+        <ul>
+            <li>Reacts to builds, test results, run and debug sessions, live
+                error counts and commits</li>
+            <li>Optional music detection on Windows, macOS and Linux</li>
+            <li>Built-in pomodoro timer announced by your companion</li>
+            <li>Several pets at once, each with its own personality; they greet
+                each other when their paths cross</li>
+            <li>Drag pets around, or let them follow your cursor</li>
+            <li>Twelve original creatures included, plus support for custom
+                sprite packs loaded from disk</li>
+            <li>English and Spanish interface, following the IDE or pinned in
+                settings</li>
+        </ul>
+
+        <h3>Custom sprites</h3>
+        <p>A sprite pack is a folder of PNG files, one per animation, with the
+        frames laid out in a horizontal strip. Drop a folder into the sprite
+        directory and reload from the Tools menu. Conversion scripts for common
+        sprite sheet and animated GIF layouts are available in the project
+        repository.</p>
+    ]]></description>
+
+    <change-notes><![CDATA[
+        <h3>0.1.0</h3>
+        <ul>
+            <li>Initial release</li>
+        </ul>
+    ]]></change-notes>
+
+    <!--
+      Depends on the platform module only, with no language-specific modules,
+      so the plugin installs on every IntelliJ-based IDE.
+    -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <!--
+      Base bundle for action text. Actions also refresh their own presentation
+      from the bundle, which is what honours the language override in settings.
+    -->
+    <resource-bundle>messages.PokedexBundle</resource-bundle>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- anchor="left" with secondary="true" places the panel in the lower
+             half of the left tool window stripe. -->
+        <toolWindow
+            id="Pokedex"
+            anchor="left"
+            secondary="true"
+            icon="/icons/pokeball.svg"
+            factoryClass="com.pokedex.ui.PetToolWindowFactory"/>
+
+        <applicationConfigurable
+            parentId="tools"
+            instance="com.pokedex.ui.PetConfigurable"
+            id="com.pokedex.settings"
+            displayName="Pokedex"/>
+    </extensions>
+
+    <projectListeners>
+        <listener
+            class="com.pokedex.events.listeners.PetBuildListener"
+            topic="com.intellij.task.ProjectTaskListener"/>
+
+        <listener
+            class="com.pokedex.events.listeners.PetTestListener"
+            topic="com.intellij.execution.testframework.sm.runner.SMTRunnerEventsListener"/>
+
+        <listener
+            class="com.pokedex.events.listeners.PetExecutionListener"
+            topic="com.intellij.execution.ExecutionListener"/>
+
+        <listener
+            class="com.pokedex.events.listeners.PetDebuggerListener"
+            topic="com.intellij.xdebugger.XDebuggerManagerListener"/>
+
+        <listener
+            class="com.pokedex.events.listeners.CodeAnalysisListener"
+            topic="com.intellij.codeInsight.daemon.DaemonCodeAnalyzer$DaemonListener"/>
+    </projectListeners>
+
+    <actions>
+        <group id="com.pokedex.group" text="Pokedex" popup="true">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+
+            <action id="com.pokedex.spawn"
+                    class="com.pokedex.ui.SpawnPetAction"
+                    text="Add Companion"
+                    description="Add another companion to the panel"/>
+
+            <action id="com.pokedex.remove"
+                    class="com.pokedex.ui.RemoveLastPetAction"
+                    text="Remove Last Companion"/>
+
+            <action id="com.pokedex.toggleMode"
+                    class="com.pokedex.ui.ToggleMovementModeAction"
+                    text="Toggle Movement Mode"
+                    description="Switch between walking the floor and free roaming"/>
+
+            <action id="com.pokedex.shuffle"
+                    class="com.pokedex.ui.ShuffleAction"
+                    text="Shuffle Companions"/>
+
+            <separator/>
+
+            <action id="com.pokedex.openSprites"
+                    class="com.pokedex.ui.OpenSpritesFolderAction"
+                    text="Open Sprite Folder"
+                    description="Open the sprite pack directory"/>
+
+            <action id="com.pokedex.reloadSprites"
+                    class="com.pokedex.ui.ReloadSpritesAction"
+                    text="Reload Sprite Packs"
+                    description="Rescan the sprite directory without restarting"/>
+
+            <separator/>
+
+            <action id="com.pokedex.pomodoro"
+                    class="com.pokedex.ui.TogglePomodoroAction"
+                    text="Start Pomodoro"/>
+
+            <action id="com.pokedex.debug.emit"
+                    class="com.pokedex.debug.DebugEmitAction"
+                    text="Emit Test Event"
+                    description="Publish a synthetic event to preview reactions"/>
+        </group>
+    </actions>
+</idea-plugin>
