@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.pokedex"
-version = "0.1.0"
+version = "0.1.1"
 
 repositories {
     mavenCentral()
@@ -35,7 +35,7 @@ intellijPlatform {
 
     pluginConfiguration {
         ideaVersion {
-            sinceBuild = "233"
+            sinceBuild = "243"
             // Left open so a new IDE release does not mark the plugin
             // incompatible before it has been verified.
             untilBuild = provider { null }
